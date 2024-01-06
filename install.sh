@@ -185,29 +185,14 @@ echo 'export PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools' >> ~/.oh-my-zsh/custom/
 sed -i 's/^plugins\=(.*)$/plugins=(common-aliases debian git history-substring-search sudo web-search)/m' ~/.zshrc
 omz reload
 
-# Fonts, used for interface and development
+# Font used for development
 FONTS_DIR="/home/$USER/.fonts"
 mkdir "$FONTS_DIR"
-
-TOP_FONTS=(
-  "3270Medium.otf"
-  "DejaVuSansMono.ttf"
-  "FiraCode-Regular.ttf"
-  "Inconsolata-Regular.ttf"
-  "Menlo-Regular.ttf"
-  "Monaco-Linux.ttf"
-  "Hack/Hack-Bold.ttf"
-  "Hack/Hack-BoldItalic.ttf"
-  "Hack/Hack-Italic.ttf"
-  "Hack/Hack-Regular.ttf"
-)
-for i in ${TOP_FONTS[*]}; do
-    echo "Downloading $i"
-    wget -qc https://github.com/hbin/top-programming-fonts/blob/master/$i?raw=true -O $(basename $i) \
-      || echo "Fail to download ${i}"
-    mv -f $(basename $i) $FONTS_DIR || echo "Could not install $i"
-    echo "Installed $i successfully"
-done
+wget -q https://github.com/source-foundry/Hack/raw/master/build/ttf/Hack-Bold.ttf -O $FONTS_DIR/Hack-Bold.ttf
+wget -q https://github.com/source-foundry/Hack/raw/master/build/ttf/Hack-BoldItalic.ttf -O $FONTS_DIR/Hack-BoldItalic.ttf
+wget -q https://github.com/source-foundry/Hack/raw/master/build/ttf/Hack-Italic.ttf -O $FONTS_DIR/Hack-Italic.ttf
+wget -q https://github.com/source-foundry/Hack/raw/master/build/ttf/Hack-Regular.ttf -O $FONTS_DIR/Hack-Regular.ttf
+fc-cache -f -v
 
 # Terminator
 cd /tmp
