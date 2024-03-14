@@ -149,7 +149,6 @@ autotypeask=true" > ~/.config/keepassx/keepassx2.ini
 if xset -dpms 2>/dev/null; then
   echo '' >> ~/.zshrc
   echo '# Disable screen blank 30 seconds' >> ~/.zshrc
-  echo '# /media/$USER/smb-royarisse/tools/install-popos.sh' >> ~/.zshrc
   echo 'xset -dpms' >> ~/.zshrc
 fi
 
@@ -259,6 +258,9 @@ gsettings set org.gnome.shell.extensions.dash-to-dock intellihide false
 mkdir -p ~/.config/sublime-text/Packages
 cd ~/.config/sublime-text/Packages
 git clone https://github.com/titoBouzout/Dictionaries.git
+
+sudo update-alternatives --install /usr/bin/gnome-text-editor gnome-text-editor "$(which subl)" 100
+#sudo update-alternatives --install /usr/bin/editor editor "$(which nano)" 100
 
 ## Sublime Dracula Theme
 #cd ~/.config/sublime-text/Packages
