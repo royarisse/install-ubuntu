@@ -59,7 +59,7 @@ sudo apt autoremove
 # About preload: https://itsfoss.com/improve-application-startup-speed-with-preload-in-ubuntu/
 sudo apt install -y arp-scan bash-completion bc cifs-utils colordiff curl \
  dconf-editor default-jdk dnsutils dos2unix firefox gdebi gimp git gnome-sushi \
- gparted htop hunspell-nl imagemagick jq keepassxc libreoffice \
+ gnome-tweaks gparted htop hunspell-nl imagemagick jq keepassxc libreoffice \
  libreoffice-l10n-nl lm-sensors mariadb-server meld mtools nginx nmap \
  openssh-server parallel pv redis rsync spotify-client sublime-text telnet \
  terminator thunderbird thunderbird-locale-nl tnef ufw vlc w3m wget whois \
@@ -98,8 +98,8 @@ sudo gdebi -n bcompare-*.deb
 # Firewall: security first
 sudo ufw enable
 sudo ufw default deny incoming
-sudo ufw allow proto tcp from $(dig +short A bootstrap.perfacilis.com) to any port 22 comment "Bootstrap"
-sudo ufw allow proto tcp from $(dig +short AAAA bootstrap.perfacilis.com) to any port 22 comment "Bootstrap"
+sudo ufw allow proto tcp from "$(dig +short A bootstrap.perfacilis.com)" to any port 22 comment "Bootstrap"
+sudo ufw allow proto tcp from "$(dig +short AAAA bootstrap.perfacilis.com)" to any port 22 comment "Bootstrap"
 sudo ufw limit proto tcp from 192.168.178.0/24 to any port 22 comment "SSH local network"
 sudo ufw allow in on tun0 comment "TryHackMe"
 sudo ufw logging medium
@@ -147,9 +147,9 @@ autotypeask=true" > ~/.config/keepassx/keepassx2.ini
 
 # https://www.reddit.com/r/pop_os/comments/eln8bp/screen_going_black_after_30_seconds/
 if xset -dpms 2>/dev/null; then
-  echo '' >> ~/.zshrc
-  echo '# Disable screen blank 30 seconds' >> ~/.zshrc
-  echo 'xset -dpms' >> ~/.zshrc
+  echo "
+# Disable screen blank 30 seconds
+xset -dpms" >> ~/.zshrc
 fi
 
 # DIsable Discover to show those pesky update messages
@@ -217,6 +217,11 @@ dconf write /org/gnome/settings-daemon/plugins/media-keys/home "'<Super>e'"
 dconf write /org/gnome/desktop/media-handling/autorun-never true
 dconf write /org/gnome/desktop/notifications/show-in-lock-screen false
 dconf write /org/gnome/mutter/workspaces-only-on-primary false
+
+# Fixed workspaces
+# https://unix.stackexchange.com/a/491582
+dconf write /org/gnome/mutter/dynamic-workspaces false
+dconf write /org/gnome/desktop/wm/preferences/num-workspaces 4
 
 # System monitor settings
 dconf write /org/gnome/shell/extensions/system-monitor/center-display true
@@ -301,7 +306,7 @@ sudo chown $USER:$USER /var/www -Rf
 sudo chmod 775 /var/www -Rf
 
 # PHP FPM for all versions and set PHP config
-for v in 5.6 7.1 7.3 7.4 8.1 8.2; do
+for v in 7.1 7.3 7.4 8.1 8.2 8.3; do
   sudo apt install -y php$v-fpm php$v-dev php$v-bcmath php$v-xml php$v-imagick \
    php$v-xdebug php$v-mbstring php$v-curl php$v-gd php$v-mysql php$v-soap \
    php$v-zip php$v-intl
@@ -323,8 +328,8 @@ pm.start_servers = 2
 pm.min_spare_servers = 1
 pm.max_spare_servers = 3" | sudo tee "/etc/php/$v/fpm/pool.d/$USER.conf"
 
-  # Config
-  echo "post_max_size = 256M
+  for e in fpm cli; do
+    echo "post_max_size = 256M
 upload_max_filesize = 256M
 error_reporting = E_ALL
 display_errors = On
@@ -338,23 +343,23 @@ max_execution_time = 300
 xdebug.var_display_max_depth = 10
 xdebug.var_display_max_children = 256
 xdebug.var_display_max_data = 1024
+zend.exception_ignore_args = Off
 
 # Allow creation of Phar
 phar.readonly = Off
 
 [xdebug]
 xdebug.start_with_request=trigger
-# 20231117 Laravel 5.5.50 (FinConnect) specific?
 xdebug.mode=develop
 xdebug.log=/tmp/xdebug.log
 #xdebug.discover_client_host=1
 #xdebug.client_host=127.0.0.1
 xdebug.client_port=9003
 
-
 xdebug.force_display_errors = 1
 xdebug.force_error_reporting = -1
-" | sudo tee "/etc/php/$v/fpm/conf.d/90-optimize.ini"
+" | sudo tee "/etc/php/$v/$e/conf.d/90-optimize.ini"
+  done
 
   sudo systemctl restart php$v-fpm
 done
@@ -375,15 +380,10 @@ sudo mv composer.phar /usr/local/bin/composer
 
 # Nodejs
 # https://github.com/nodesource/distributions
-#curl -fsSL https://deb.nodesource.com/setup_20.x > /tmp/install-node.sh
-#sudo bash /tmp/install-node.sh
-#rm /tmp/install-node.sh
-#sudo apt-get install -y nodejs
-curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
-NODE_MAJOR=20
-echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
-sudo apt update
-sudo apt install nodejs -y
+curl -fsSL https://deb.nodesource.com/setup_20.x > /tmp/install-node.sh
+sudo bash /tmp/install-node.sh
+rm /tmp/install-node.sh
+sudo apt install -y nodejs
 
 # Required NPM nodules
 # https://sass-lang.com/install
