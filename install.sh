@@ -37,18 +37,18 @@ sudo add-apt-repository ppa:ondrej/php
 wget https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
 chmod +x mariadb_repo_setup
 sudo ./mariadb_repo_setup
-# Firefox / Thunderbird
-sudo add-apt-repository ppa:mozillateam/ppa
 
-# Firefox
+# Firefox / Thunderbird
+# https://support.mozilla.org/en-US/kb/install-firefox-linux?as=u&utm_source=inproduct
+sudo install -d -m 0755 /etc/apt/keyrings
+wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
+gpg -n -q --import --import-options import-show /etc/apt/keyrings/packages.mozilla.org.asc | awk '/pub/{getline; gsub(/^ +| +$/,""); if($0 == "35BAA0B33E9EB396F59CA838C0BA5CE6DC6315A3") print "\nThe key fingerprint matches ("$0").\n"; else print "\nVerification failed: the fingerprint ("$0") does not match the expected one.\n"}'
+echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | sudo tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null
 echo '
 Package: *
-Pin: release o=LP-PPA.mozillateam
-Pin-Priority: 1001
-
-Package: Firefox
-Pin: version 1:1snap1-Ubuntu2
-Pin-Priority -1' | sudo tee /etc/apt/preferences.d/mozilla-firefox
+Pin: origin packages.mozilla.org
+Pin-Priority: 1000
+' | sudo tee /etc/apt/preferences.d/mozilla
 
 #sudo apt remove -y gnome-shell-extension-ubuntu-dock update-notifier tracker
 sudo apt-get remove --purge unattended-upgrades snapd
@@ -65,7 +65,7 @@ sudo apt install -y arp-scan bash-completion bc cifs-utils colordiff curl \
  terminator thunderbird thunderbird-locale-nl tnef ufw vlc w3m wget whois \
  xclip zsh
 
-# Update nodifier
+# Update notifier
 # https://askubuntu.com/a/1322357
 # !!! Breaks Ubuntu-Desktop metapackage but that's fine until dist-upgrade
 sudo apt remove update-notifier update-manager
@@ -151,11 +151,6 @@ if xset -dpms 2>/dev/null; then
 # Disable screen blank 30 seconds
 xset -dpms" >> ~/.zshrc
 fi
-
-# DIsable Discover to show those pesky update messages
-# https://www.reddit.com/r/kde/comments/dj4svw/how_to_get_rid_of_discover_notifier/f4g9ces/
-mkdir ~/.config/autostart
-echo 'Hidden=true' >> ~/.config/autostart/org.kde.discover.notifier.desktop
 
 # ZSH, oh my zsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
