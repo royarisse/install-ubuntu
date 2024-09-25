@@ -50,7 +50,7 @@ Pin: origin packages.mozilla.org
 Pin-Priority: 1000
 ' | sudo tee /etc/apt/preferences.d/mozilla
 
-#sudo apt remove -y gnome-shell-extension-ubuntu-dock update-notifier tracker
+# We do our own updates and we certainly don't want snapd
 sudo apt-get remove --purge unattended-upgrades snapd
 sudo apt-mark hold unattended-upgrades snapd
 sudo apt autoremove
@@ -144,6 +144,10 @@ autotypeask=true" > ~/.config/keepassx/keepassx2.ini
 ################################################################################
 # =========================== LOOK AND FEEL ====================================
 ################################################################################
+
+# First get rid of dock
+# https://askubuntu.com/questions/979732/how-can-i-hide-the-dock-in-gnome
+sudo apt remove --purge gnome-shell-extension-ubuntu-dock
 
 # https://www.reddit.com/r/pop_os/comments/eln8bp/screen_going_black_after_30_seconds/
 if xset -dpms 2>/dev/null; then
@@ -334,21 +338,21 @@ session.gc_maxlifetime = 7200
 memory_limit = 512M
 max_execution_time = 300
 
-# Show more elements in var_dump
+; Show more elements in var_dump
 xdebug.var_display_max_depth = 10
 xdebug.var_display_max_children = 256
 xdebug.var_display_max_data = 1024
 zend.exception_ignore_args = Off
 
-# Allow creation of Phar
+; Allow creation of Phar
 phar.readonly = Off
 
 [xdebug]
 xdebug.start_with_request=trigger
 xdebug.mode=develop
 xdebug.log=/tmp/xdebug.log
-#xdebug.discover_client_host=1
-#xdebug.client_host=127.0.0.1
+;xdebug.discover_client_host=1
+;xdebug.client_host=127.0.0.1
 xdebug.client_port=9003
 
 xdebug.force_display_errors = 1
