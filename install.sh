@@ -257,6 +257,9 @@ gsettings set org.gnome.shell.extensions.dash-to-dock autohide false
 gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed false
 gsettings set org.gnome.shell.extensions.dash-to-dock intellihide false
 
+# Disable touchpad when mouse connected
+gsettings set org.gnome.desktop.peripherals.touchpad send-events disabled-on-external-mouse
+
 ## Sublime dictionaries
 ## https://github.com/titoBouzout/Dictionaries#installation
 mkdir -p ~/.config/sublime-text/Packages
@@ -306,9 +309,7 @@ sudo chmod 775 /var/www -Rf
 
 # PHP FPM for all versions and set PHP config
 for v in 7.1 7.3 7.4 8.1 8.2 8.3; do
-  sudo apt install -y php$v-fpm php$v-dev php$v-bcmath php$v-xml php$v-imagick \
-   php$v-xdebug php$v-mbstring php$v-curl php$v-gd php$v-mysql php$v-soap \
-   php$v-zip php$v-intl
+  sudo apt install -y php$v-{fpm,dev,bcmath,xml,imagick,xdebug,mbstring,curl,gd,mysql,soap,zip,intl}
 
   sudo mv "/etc/php/$v/fpm/pool.d/www.conf" "/etc/php/$v/fpm/pool.d/www.disabled"
 
@@ -357,6 +358,7 @@ xdebug.client_port=9003
 
 xdebug.force_display_errors = 1
 xdebug.force_error_reporting = -1
+xdebug.cli_color = 1
 " | sudo tee "/etc/php/$v/$e/conf.d/90-optimize.ini"
   done
 
